@@ -45,11 +45,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\Inverter.cs" />
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\Node.cs" />
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\Selector.cs" />
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\Sequence.cs" />
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\TestClass.cs" />
+     <Compile Include="Assets\PrivateProjects\KangYeonWoo\BoomMonster.cs" />
+     <Compile Include="Assets\PrivateProjects\KangYeonWoo\CharterPlayer.cs" />
+     <Compile Include="Assets\PrivateProjects\KangYeonWoo\Monster.cs" />
+     <Compile Include="Assets\PrivateProjects\KangYeonWoo\MonsterControler.cs" />
+     <Compile Include="Assets\PrivateProjects\KangYeonWoo\Perspective.cs" />
+     <Compile Include="Assets\PrivateProjects\KangYeonWoo\Pracice\Node.cs" />
+     <Compile Include="Assets\PrivateProjects\KangYeonWoo\Pracice\NodeStates.cs" />
+     <Compile Include="Assets\PrivateProjects\KangYeonWoo\Pracice\TestClass.cs" />
+     <Compile Include="Assets\PrivateProjects\KangYeonWoo\Sense.cs" />
+     <Compile Include="Assets\PrivateProjects\KangYeonWoo\WarriorMonster.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
