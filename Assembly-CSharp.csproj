@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\PrivateProjects\KangYeonWoo\BoomMonster.cs" />
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\CharterPlayer.cs" />
+     <Compile Include="Assets\PrivateProjects\KangYeonWoo\CharcterPlayer.cs" />
      <Compile Include="Assets\PrivateProjects\KangYeonWoo\Monster.cs" />
      <Compile Include="Assets\PrivateProjects\KangYeonWoo\MonsterControler.cs" />
      <Compile Include="Assets\PrivateProjects\KangYeonWoo\Perspective.cs" />

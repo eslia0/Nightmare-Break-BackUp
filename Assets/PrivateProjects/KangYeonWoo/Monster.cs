@@ -11,6 +11,9 @@ public class Monster : MonoBehaviour {
 
 	public GameObject perceivePlayer;
 
+	public int stageLevel;
+	public float hp;
+
 	public float RunRange;// == perceive;
 	public float attackRange;
 	public float attackCycle;
@@ -23,7 +26,7 @@ public class Monster : MonoBehaviour {
 	public float[] playerToMonsterDamage;
 	public float[] aggroRank;
 	public float changeTargetTime=0;
-
+	 
 
 	[SerializeField]private float[]currentDisTanceArray;
 	private Vector3 checkDirection;
@@ -57,6 +60,45 @@ public class Monster : MonoBehaviour {
 	}
 
 
+
+
+
+	private IEnumerator coNormalChasePlayer()
+	{
+		while (true) {
+			if (isAlive) {
+				if(!isHited){NormalchasePlayer ();
+					yield return new WaitForSeconds (3f);}
+			}
+			if (!isAlive) {
+				StopCoroutine (coNormalChasePlayer ());
+			}
+		}
+	}
+
+	public IEnumerator CoChasePlayer(){
+		return coNormalChasePlayer ();
+	}
+
+	private IEnumerator coHitedChasePlayer(){
+		while (true) {
+			if (isAlive) {
+				if (isHited) {
+					HitedchasePlayer ();
+					yield return new WaitForSeconds (2f);
+				}
+			}
+			if (!isAlive) {
+				StopCoroutine (coHitedChasePlayer ());
+			}
+		}
+		
+	}
+
+	public IEnumerator CoHitedChasePlayer(){
+		return coHitedChasePlayer();
+	}
+
 	//coutine need this method;
 	public void NormalchasePlayer(){
 		for (int i = 0; i < player.Length; i++) {
@@ -85,44 +127,5 @@ public class Monster : MonoBehaviour {
 			}
 		}
 	}
-
-
-	private IEnumerator coNormalChasePlayer()
-	{
-		while (true) {
-			if (isAlive) {
-				if(!isHited){NormalchasePlayer ();
-					yield return new WaitForSeconds (5f);}
-			}
-			if (!isAlive) {
-				StopCoroutine (coNormalChasePlayer ());
-			}
-		}
-	}
-
-	public IEnumerator CoChasePlayer(){
-		return coNormalChasePlayer ();
-	}
-
-	private IEnumerator coHitedChasePlayer(){
-		while (true) {
-			if (isAlive) {
-				if (isHited) {
-					HitedchasePlayer ();
-					yield return new WaitForSeconds (5f);
-				}
-			}
-			if (!isAlive) {
-				StopCoroutine (coHitedChasePlayer ());
-			}
-		}
-		
-	}
-
-	public IEnumerator CoHitedChasePlayer(){
-		return coHitedChasePlayer();
-	}
-
-
 
 }
