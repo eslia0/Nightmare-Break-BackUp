@@ -10,6 +10,7 @@ public class Monster : MonoBehaviour {
 	public GameObject monster;
 
 	public GameObject perceivePlayer;
+	public BattleCarculationManager BCM;
 
 	public int stageLevel;
 	public float hp;
@@ -52,6 +53,7 @@ public class Monster : MonoBehaviour {
 		monster = this.gameObject;
 		isAlive = true;
 		isHited = false;
+		BCM = GameObject.Find ("BattleCarculationManager").GetComponent<BattleCarculationManager> ();
 	}
 
 

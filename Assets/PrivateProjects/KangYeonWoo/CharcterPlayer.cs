@@ -11,12 +11,15 @@ public class CharcterPlayer : MonoBehaviour
 
 	public GameObject EsPadaSword;
 
+
+	public GameObject Sword;
 	// Use this for initialization
 	void Start () 
 	{
 		//this code needed to playersuch and player designate so a few time later this code demand revising;
 		User = GameObject.Find("Player1");
-
+		Sword = GameObject.Find ("sword");
+		Sword.SetActive (false);
 
 		//MonsterA = GameObject.FindGameObjectWithTag ("Monster");
 	}
@@ -98,11 +101,13 @@ public class CharcterPlayer : MonoBehaviour
 
 		if (Input.GetButtonDown ("Skill1"))
 		{
-			Maelstrom ();
+			Sword.SetActive (true);
+			//Maelstrom ();
 		}
 		else if (Input.GetButtonDown ("Skill2"))
 		{
-			Espada ();
+			Sword.SetActive (false);
+			//Espada ();
 		}
 	}
 

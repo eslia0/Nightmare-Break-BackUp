@@ -81,15 +81,26 @@ public class BoomMonster : Monster {
 					Pattern (StatePosition.Run);
 				}
 				if (currentDisTance < perceive * 0.2f) {
-					{Pattern (StatePosition.Boom);}	
+					{
+						//Pattern (StatePosition.Boom);
+					}	
 				}
 			}
+
 		}
 		if (!IsAlive) {
 			Pattern (StatePosition.Death);
 		}
 	}
 
+	void OnTriggerEnter(Collider coll){
+		if (coll.gameObject.layer == LayerMask.NameToLayer("Weapon")) {
+			Debug.Log (coll.gameObject.transform.parent);
+			BCM.DamageCarculateProcess (coll.gameObject.transform.parent.gameObject, this.gameObject, coll.gameObject);//this method need conference;
+
+		}
+		//if(coll.gameObject.name == "sword"){Debug.Log ("hit");}
+	}
 
 
 }

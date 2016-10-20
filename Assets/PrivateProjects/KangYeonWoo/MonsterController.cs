@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MonsterControler : MonoBehaviour {
+public class MonsterController : MonoBehaviour {
 	public BoomMonster[] flock; 
 	public GameObject TestMonster;
 
