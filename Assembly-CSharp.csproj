@@ -6,7 +6,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{D352B65B-CE6F-3158-F46A-55397E837AA9}</ProjectGuid>
+    <ProjectGuid>{F42F4A38-E126-6373-CEC5-8E821CBE4A14}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -45,17 +45,30 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\BattleCarculationManager.cs" />
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\BoomMonster.cs" />
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\CharcterPlayer.cs" />
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\Monster.cs" />
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\MonsterController.cs" />
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\Perspective.cs" />
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\Pracice\Node.cs" />
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\Pracice\NodeStates.cs" />
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\Pracice\TestClass.cs" />
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\Sense.cs" />
-     <Compile Include="Assets\PrivateProjects\KangYeonWoo\WarriorMonster.cs" />
+     <Compile Include="Assets\Effect\ParticleDestroy.cs" />
+     <Compile Include="Assets\Scripts\Character\CharacterManager.cs" />
+     <Compile Include="Assets\Scripts\Character\InputManager.cs" />
+     <Compile Include="Assets\Scripts\CharacterStatus.cs" />
+     <Compile Include="Assets\Scripts\DungeonSystem\BattleCarculationManager.cs" />
+     <Compile Include="Assets\Scripts\DungeonSystem\DungeonManager.cs" />
+     <Compile Include="Assets\Scripts\DungeonSystem\Monster.cs" />
+     <Compile Include="Assets\Scripts\DungeonSystem\Section.cs" />
+     <Compile Include="Assets\Scripts\GameManager.cs" />
+     <Compile Include="Assets\Scripts\Monster\BoomMonster.cs" />
+     <Compile Include="Assets\Scripts\Monster\WarriorMonster.cs" />
+     <Compile Include="Assets\Scripts\Network\DataHandler.cs" />
+     <Compile Include="Assets\Scripts\Network\DataReceiver.cs" />
+     <Compile Include="Assets\Scripts\Network\DataSender.cs" />
+     <Compile Include="Assets\Scripts\Network\NetworkManager.cs" />
+     <Compile Include="Assets\Scripts\Packet\IPacket.cs" />
+     <Compile Include="Assets\Scripts\Packet\P2PPacket\CharacterCreatePacket.cs" />
+     <Compile Include="Assets\Scripts\Packet\P2PPacket\CharacterStatePacket.cs" />
+     <Compile Include="Assets\Scripts\Packet\P2PPacket\CreateUnitPacket.cs" />
+     <Compile Include="Assets\Scripts\Packet\PacketId.cs" />
+     <Compile Include="Assets\Scripts\Packet\Serializer\HeaderSerializer.cs" />
+     <Compile Include="Assets\Scripts\Packet\Serializer\Serializer.cs" />
+     <Compile Include="Assets\Scripts\UIManager.cs" />
+     <Compile Include="Assets\Weapon.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
