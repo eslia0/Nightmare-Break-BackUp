@@ -8,14 +8,23 @@ public class Monster : MonoBehaviour {
 	//public DungeonManager dungeonManager;
 
 	public GameObject[] player;
-	public Animator animator;
+//	public Animator animator;
+//	public AnimationState aniState;
 
 	public GameObject targetPlayer;
 	//public BattleCarculationManager BCM;
     
-	
+	private Vector3 leftVector3 = new Vector3(0,180,0);
+	private Vector3 rightVector3 = new Vector3(0,0,0);
+
 
 	//mode,gateArraynumber,monsterArraynumber
+	protected bool moveAble;
+	public bool MoveAble{
+		get{ return moveAble;}
+		set{ moveAble = value;}
+	}
+
 	[SerializeField]private bool mode;
 	public bool Mode{
 		set { mode = value;}
@@ -43,11 +52,11 @@ public class Monster : MonoBehaviour {
 	//monster Speed variable;
 
 	private bool isAlive;
-	protected bool isAttack;
+	[SerializeField]protected bool isAttack;
 	private bool isHited;
 
 	public float[] playerToMonsterDamage;
-	public float[] aggroRank;
+	public float[] aggroRank; //playertoMonsterdamage/currentdistancePlayer;
 	public float changeTargetTime=0;
 	 
 
@@ -71,12 +80,18 @@ public class Monster : MonoBehaviour {
 		currentDisTanceArray = new float[player.Length];
 		playerToMonsterDamage = new float[player.Length];
 	}
+
+	public GameObject attackCollider;
 	public void MonsterSet(){
 		isAlive = true;
 		isHited = false;
-		//BCM = GameObject.Find ("BattleCarculationManager").GetComponent<BattleCarculationManager> ();
-		//dungeonManager = GameObject.Find ("DungeonManager").GetComponent<DungeonManager> (); error ! Delete or change;
-		animator = this.gameObject.GetComponent<Animator> ();
+		moveAble = true;
+//		animator = this.gameObject.GetComponent<Animator> ();
+		StartCoroutine(LookatChange ());
+		maxLife = 100;
+		currentLife = 100;
+//		attackCollider = GameObject.FindGameObjectWithTag("Finish");
+//		attackCollider.SetActive (false);
 	}
 
 
@@ -151,4 +166,59 @@ public class Monster : MonoBehaviour {
 		//dungeonManager.MonsterArrayAliveCheck(asdf)
 	}
 
+	public enum StateDirecion{
+		right,
+		left
+	};
+	public StateDirecion stateDirecion;
+
+	IEnumerator LookatChange(){
+		while (true) {
+			if (!isAttack) {
+				if (targetPlayer != null) {
+					if ((targetPlayer.transform.position.z - transform.position.z) >= 0) {
+						LookAtPattern (StateDirecion.right);
+					}
+					if ((targetPlayer.transform.position.z - transform.position.z) < 0) {
+						LookAtPattern (StateDirecion.left);
+					}
+				}
+			}
+			yield return new WaitForSeconds (2f);
+		}
+	}
+
+	public void AttackEnd(){
+		
+		StartCoroutine (LookatChange ());
+		//Debug.Log ("animator.SetInteger (State, 0)");
+		moveAble=true;
+		isAttack = false;
+		//animator.SetInteger ("State", 0);
+		attackCollider.SetActive (false);
+		Debug.Log ("AttackEnd");
+	}
+	public void AttackStart(){
+		moveAble = false;
+		isAttack = true;
+		StopCoroutine (LookatChange ());
+		Debug.Log ("AttackStart");
+	}
+	public void AnimatorReset(){
+//		animator.SetInteger ("State", 0);
+		isAttack = false;
+	}
+	public void AttackBlitz()
+	{
+		attackCollider.SetActive (true);
+	}
+
+	public void LookAtPattern(StateDirecion state){
+		switch(state){
+		case StateDirecion.right: 
+			{transform.rotation = Quaternion.Euler(rightVector3);break;}
+		case StateDirecion.left:
+			{transform.rotation = Quaternion.Euler(leftVector3);break;}
+		}
+	}
 }

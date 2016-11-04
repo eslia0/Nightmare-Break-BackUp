@@ -55,6 +55,7 @@
      <Compile Include="Assets\Scripts\Effect\ParticleDestroy.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\Monster\BoomMonster.cs" />
+     <Compile Include="Assets\Scripts\Monster\ExampleObject.cs" />
      <Compile Include="Assets\Scripts\Monster\WarriorMonster.cs" />
      <Compile Include="Assets\Scripts\Network\DataHandler.cs" />
      <Compile Include="Assets\Scripts\Network\DataReceiver.cs" />
