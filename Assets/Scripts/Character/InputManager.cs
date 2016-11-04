@@ -17,7 +17,7 @@ public class InputManager : MonoBehaviour
 
     public void InitializeManager()
     {
-        characterManager = GameObject.FindWithTag("Player").GetComponent<CharacterManager>();
+        characterManager = GameObject.FindGameObjectWithTag("Player").GetComponent<CharacterManager>();
     }
 
     void Update()

@@ -57,7 +57,6 @@ public class CharacterManager : MonoBehaviour
         state = CharacterState.Idle;
         enemy = null;
         rigdbody = GetComponent<Rigidbody>();
-        inputmanager = GameObject.FindGameObjectWithTag("InputManager").GetComponent<InputManager>();
         mealstromState = false;
         wall = GameObject.FindGameObjectWithTag("Wall");
         JumpMove = false;
