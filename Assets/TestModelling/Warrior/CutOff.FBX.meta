@@ -205,6 +205,14 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
+      - time: 1
+        functionName: AnimationEnd
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: f571c7749b70cf74582caeb77568ff89,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1

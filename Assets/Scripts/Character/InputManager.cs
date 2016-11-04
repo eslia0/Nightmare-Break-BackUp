@@ -8,24 +8,7 @@ public class InputManager : MonoBehaviour
     public float horizontal = 0;
     Vector3 cameraDistance;
 
-    public bool isJumping;
-
     public CharacterManager characterManager;
-
-
-
-    public bool IsJumping
-    {
-        get
-        {
-            return this.isJumping;
-        }
-        set
-        {
-            isJumping = value;
-        }
-    }
-
 
     void Awake()
     {
@@ -35,13 +18,6 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        if (isJumping)
-        {
-            if (characterManager.transform.position.y <= 0)
-            {
-                isJumping = false;
-            }
-        }
         GetKeyInput();
         //Camera.main.transform.rotation = new Quaternion (12, -90, 0, Camera.main.transform.rotation.w);
     }
@@ -51,7 +27,6 @@ public class InputManager : MonoBehaviour
         vertical = Input.GetAxisRaw("Vertical");
         horizontal = Input.GetAxisRaw("Horizontal");
         characterManager.Move(vertical, horizontal);
-
 
         if (Input.GetKeyDown(KeyCode.T))
         {
@@ -65,17 +40,13 @@ public class InputManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.C))
         {
-            //isJumping = true;
-            if (!isJumping)
-            {
-                characterManager.Jump();
-            }
+            characterManager.Jump();
         }
 
         if (Input.GetButtonDown("Skill1"))
         {
             characterManager.mealstromState = true;
-            //Maelstrom ();
+
         }
         else if (Input.GetButtonDown("Skill2"))
         {
@@ -85,7 +56,6 @@ public class InputManager : MonoBehaviour
         {
             characterManager.Espada();
         }
-
     }
 
     public void LateUpdate()
@@ -98,8 +68,4 @@ public class InputManager : MonoBehaviour
     {
         Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, characterManager.transform.position + cameraDistance, Time.deltaTime * 10);
     }
-
-
-
-
 }
