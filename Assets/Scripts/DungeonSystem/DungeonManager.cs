@@ -115,10 +115,10 @@ public class DungeonManager : MonoBehaviour
         //여기서는 플레이어 캐릭터 딕셔너리 -> 각 직업에 따른 플레이어 스탯과 능력치, 스킬, 이름을 가지고 있음
         //딕셔너리를 사용하여 그에 맞는 캐릭터를 소환해야 하지만 Prototype 진행 시에는 고정된 플레이어를 소환하도록 함.
 
-        GameObject player = Instantiate(Resources.Load("unitychan")) as GameObject;
+        GameObject player = Instantiate(Resources.Load("Warrior")) as GameObject;
         player.transform.position = Vector3.zero;
         player.GetComponent<CharacterManager>().enabled = true;
-        player.name = "UnityChan";
+        player.name = "Warrior";
         player.tag = "Player";
         players[0] = player;
 
@@ -132,9 +132,9 @@ public class DungeonManager : MonoBehaviour
         //위와 같은 생성이지만 이곳에서는 다른 플레이어의 캐릭터를 생성한다.
         //DataHandler 에서 데이타를 받아서 실행된다.
 
-        GameObject unit = Instantiate(Resources.Load("unitychan")) as GameObject;
+        GameObject unit = Instantiate(Resources.Load("Warrior")) as GameObject;
         unit.transform.position = newPosition;
-        unit.name = "UnityChan";
+        unit.name = "Warrior";
 
         players[1] = unit;
 

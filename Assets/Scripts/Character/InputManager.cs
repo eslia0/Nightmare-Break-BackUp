@@ -12,8 +12,12 @@ public class InputManager : MonoBehaviour
 
     void Awake()
     {
-        characterManager = GameObject.FindWithTag("Player").GetComponent<CharacterManager>();
         cameraDistance = new Vector3(11f, 6.5f, 0);
+    }
+
+    public void InitializeManager()
+    {
+        characterManager = GameObject.FindWithTag("Player").GetComponent<CharacterManager>();
     }
 
     void Update()
