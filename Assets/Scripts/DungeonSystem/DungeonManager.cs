@@ -9,9 +9,6 @@ public class DungeonManager : MonoBehaviour
     private GameObject[] players = new GameObject[MaxPlayerNum];
     public GameObject[] Players { get { return players; } }
 
-    public BoomMonster[] flock;
-    public GameObject TestMonster;
-
     DataSender dataSender;
 
     public void InitializeManager()
@@ -60,21 +57,7 @@ public class DungeonManager : MonoBehaviour
         }
     }
 
-    //	public enum Mode{
-    //		War=1,
-    //		Defence
-    //	};
-    //
-    //	public void DungeonModeChange(Mode state){
-    //		switch(state){
-    //		case Mode.War: 
-    //			{Debug.Log ("a"); break;}// 
-    //		case Mode.Defence:
-    //			{Debug.Log ("b"); break;}//(socket close) send other client 
-    //		}
-    //	}
-
-    void DungeonConstruct()
+	void DungeonConstruct()
     {
         for (int i = 0; i <= section.Length - 1; i++)
         {

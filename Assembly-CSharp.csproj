@@ -6,7 +6,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{D51DB7A6-B0AD-6DD0-52A3-895B82075D78}</ProjectGuid>
+    <ProjectGuid>{D352B65B-CE6F-3158-F46A-55397E837AA9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -55,6 +55,7 @@
      <Compile Include="Assets\Scripts\Effect\ParticleDestroy.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\Monster\BoomMonster.cs" />
+     <Compile Include="Assets\Scripts\Monster\ExampleObject.cs" />
      <Compile Include="Assets\Scripts\Monster\WarriorMonster.cs" />
      <Compile Include="Assets\Scripts\Network\DataHandler.cs" />
      <Compile Include="Assets\Scripts\Network\DataReceiver.cs" />
