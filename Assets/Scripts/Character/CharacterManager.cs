@@ -9,35 +9,44 @@ public class CharacterManager : MonoBehaviour
         Run,
         Attack,
         Jump,
-        CutOff
+        CutOff,
+        Maelstrom,
+        EsPadaSwordSummon
     }
 
     Animator animator;
+    public Renderer rend;
+
     public float skillTime;
     public GameObject esPadaSword;
-    public float maelstromDistance;
+   
     public float charSpeed;
     public float jumpPower;
     public Rigidbody rigdbody;
     public bool mealstromState;
 
+    public bool charVer;
+    public bool JumpMove;
+
     AnimatorStateInfo runState;
 
     public InputManager inputmanager;
 
-
-
-    public GameObject[] enermy;
+    public GameObject[] enemy;
+    public GameObject wall;
 
 
     private CharacterStatus stat;
     private int potionCount = 3;
     public int[] skillCoolTime;
-
-
+    public float esPadaSwordSpeed;
+    public float esPadaSwordMatarial;
+    public bool esPadaSwordRendTime;
+    public GameObject EspadaTemp;
+    
     public Animator Animator { get { return animator; } }
 
-    CharacterState state;
+    [SerializeField]CharacterState state;
     public CharacterState State { get { return state; } }
 
 
@@ -46,55 +55,242 @@ public class CharacterManager : MonoBehaviour
         stat = GetComponent<CharacterStatus>();
         animator = GetComponent<Animator>();
         state = CharacterState.Idle;
-        enermy = null;
+        enemy = null;
         rigdbody = GetComponent<Rigidbody>();
         inputmanager = GameObject.FindGameObjectWithTag("InputManager").GetComponent<InputManager>();
         mealstromState = false;
+        wall = GameObject.FindGameObjectWithTag("Wall");
+        JumpMove = false;
+       
     }
 
     void Update()
     {
-        enermy = GameObject.FindGameObjectsWithTag("Enermy");
+        enemy = GameObject.FindGameObjectsWithTag("Enemy");
 
         if (mealstromState)
         {
-            Maelstrom();
+                Maelstrom();
+        }
+        if (esPadaSwordRendTime && EspadaTemp != null)
+        {
+            rend = EspadaTemp.gameObject.GetComponent<Renderer>();
+            esPadaSwordMatarial += Time.deltaTime;
+
+            if (EspadaTemp.transform.position.y > 0.1)
+            {
+                // float esPadaSwordAlpha = 0.8f - esPadaSwordMatarial;
+                float esPadaSwordAlpha = 1;
+                rend.material.color = new Color(0, 0, 0, esPadaSwordAlpha);
+             
+                if (esPadaSwordAlpha < 0.5)
+                {
+                    esPadaSwordMatarial = 0;
+                    Destroy(EspadaTemp, 0.5f);
+                }
+
+            }
         }
 
     }
 
+    public void AnimationEnd()
+    {
+        CharState("Idle");
+        JumpMove = false;
+        Debug.Log("anima End");
+    }
+
+    //char state Method
     public void Move(float ver, float hor)
     {
-        runState = this.animator.GetCurrentAnimatorStateInfo(0);
-
-        if (!animator.GetBool("Attack"))
+        if (state == CharacterState.Idle || state == CharacterState.Run)
         {
-            if (ver != 0 || hor != 0)
+            runState = this.animator.GetCurrentAnimatorStateInfo(0);
+
+            if (!animator.GetBool("Attack"))
             {
-                animator.SetFloat("Ver", ver);
-                animator.SetFloat("Hor", hor);
-
-                if (ver < 0)
+                if (ver != 0 || hor != 0)
                 {
-                    transform.rotation = Quaternion.Euler(new Vector3(0, 180.0f, 0));
-                }
-                else if (ver > 0)
-                {
-                    transform.rotation = Quaternion.Euler(new Vector3(0, 0.0f, 0));
-                }
-                CharState("Run");
+                    animator.SetFloat("Ver", ver);
+                    animator.SetFloat("Hor", hor);
 
-                transform.Translate((Vector3.forward * ver - Vector3.right * hor) * Time.deltaTime * charSpeed, Space.World);
+                    if (ver < 0)
+                    {
+                        transform.rotation = Quaternion.Euler(new Vector3(0, 180.0f, 0));
+                        charVer = false;
+                    }
+                    else if (ver >= 0)
+                    {
+                        transform.rotation = Quaternion.Euler(new Vector3(0, 0.0f, 0));
+                        charVer = true;
+                    }
+                    CharState("Run");
+                    if (runState.IsName("Run"))
+                    {
+                        transform.Translate((Vector3.forward * ver - Vector3.right * hor) * Time.deltaTime * charSpeed, Space.World);
+
+                    }
+                }
+                else if (ver == 0 && hor == 0)
+                {
+                    animator.SetBool("Run", false);
+                    CharState("Idle");
+                }
             }
-            else if (ver == 0 && hor == 0)
+        }
+        else if (state == CharacterState.Jump && JumpMove )
+        {
+            transform.Translate((Vector3.forward * ver - Vector3.right * hor) * Time.deltaTime * charSpeed, Space.World);
+        }
+        
+    }
+    public void NormalAttack()
+    {
+        if (state != CharacterState.CutOff && state != CharacterState.Attack && state != CharacterState.Maelstrom && state != CharacterState.EsPadaSwordSummon)
+        {
+            Debug.Log(state);
+            CharState("Attack");
+        }
+    }
+
+    public void CheckGrounded()
+    {
+        if (state == CharacterState.Jump)
+        {
+            if (transform.position.y <= 0.1f)
             {
-                animator.SetBool("Run", false);
                 CharState("Idle");
             }
         }
-
     }
 
+    public void Jump()
+    {
+        if (state != CharacterState.Jump && state != CharacterState.Maelstrom && state != CharacterState.CutOff && state != CharacterState.Maelstrom)
+        {
+            CharState("Jump");
+        }
+    }
+
+    public void JumpForce()
+    {
+         rigdbody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
+         JumpMove = true;
+    }
+
+
+    //swordmaster Skill
+    public void Espada()
+    {
+        if (state != CharacterState.Jump && state != CharacterState.Maelstrom && state != CharacterState.CutOff && state != CharacterState.EsPadaSwordSummon)
+        {
+            CharState("EsPadaSwordSummon");
+        }
+    }
+    public void EspadaSummon()
+    {
+        float espadaPos;
+        if (charVer)
+        {
+            espadaPos = 10.0f;
+            Debug.Log("in");
+        }
+        else
+        {
+            espadaPos = -10.0f;
+        }
+
+        EspadaTemp = (GameObject)Instantiate(esPadaSword, transform.position + new Vector3(0.0f, 10.0f, espadaPos), Quaternion.Euler(new Vector3(0.0f, -90, 0.0f)));
+        EspadaTemp.gameObject.GetComponent<Rigidbody>().AddForce(-Vector3.up * esPadaSwordSpeed, ForceMode.Impulse);
+        esPadaSwordRendTime = true;
+    }
+
+    public void Maelstrom()
+    {
+        
+        if (state != CharacterState.Run && state != CharacterState.Idle )
+        {
+            mealstromState = false;
+        }
+        else
+        {
+            CharState("Maelstrom");
+            float maelstromSpeed = 0.5f;
+            float maelstromDistance;
+
+            skillTime += Time.deltaTime;
+
+
+            for (int i = 0; i < enemy.Length; i++)
+            {
+                maelstromDistance = Vector3.Distance(this.transform.position, enemy[i].transform.position);
+
+                if (maelstromDistance < 10)
+                {
+                    enemy[i].transform.Translate((this.transform.position - enemy[i].transform.position) * maelstromSpeed * Time.deltaTime, Space.World);
+                }
+            }
+            if (skillTime >= 1.5f)
+            {
+                mealstromState = false;
+                skillTime = 0;
+            }
+        }
+    }
+
+    public void CutOff()
+    {
+        if (state != CharacterState.Jump && state != CharacterState.CutOff && state != CharacterState.Maelstrom && state != CharacterState.EsPadaSwordSummon)
+        {
+            CharState("CutOff");
+        }
+    }
+
+    public void CutOffMove()
+    {
+        Instantiate(Resources.Load<GameObject>("Effect/SwordShadow"), new Vector3(transform.position.x, transform.position.y + 1.0f, transform.position.z), Quaternion.identity);
+
+
+        Ray cutOffDistance = new Ray(this.transform.position, transform.forward); //(this.transform.position);
+        RaycastHit rayHit;
+
+        if (Physics.Raycast(cutOffDistance, out rayHit, 5f, 1 << LayerMask.NameToLayer("Map")))
+        {
+          
+            transform.Translate(0, 0, rayHit.distance - 0.5f);
+        }
+        else
+        {
+            transform.Translate(0, 0, 5);
+            
+        }
+      
+        //animation stop and keyboardinput Lock
+    }
+
+
+
+    //using Potion
+    public void UsingPotion()
+    {   //Potion Effect create
+        GameObject potionEffect = Instantiate(Resources.Load<GameObject>("Effect/Potion"), transform.position, Quaternion.identity) as GameObject;
+        potionEffect.transform.parent = gameObject.transform;
+        potionEffect.transform.position += Vector3.up;
+        StartCoroutine(Potion());
+    }
+
+    IEnumerator Potion()
+    {
+        for (int i = 0; i < potionCount; i++)
+        {
+            stat.healthPoint += (int)(stat.healthPoint * 0.3);
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
+
+    //Animation Method
     void SetStateDefault()
     {
         animator.SetBool("Idle", false);
@@ -129,85 +325,19 @@ public class CharacterManager : MonoBehaviour
                 state = CharacterState.CutOff;
                 animator.SetTrigger("CutOff");
                 break;
-
+            case "Maelstrom":
+                state = CharacterState.Maelstrom;
+                animator.SetTrigger("Maelstrom");
+                break;
+            case "EsPadaSwordSummon":
+                state = CharacterState.EsPadaSwordSummon;
+                animator.SetTrigger("EsPadaSwordSummon");
+                break;
         }
     }
 
-    public void NormalAttack()
-    {
-        CharState("Attack");
-    }
 
-    public void Jump()
-    {
-        if (!inputmanager.IsJumping)
-        {
-            inputmanager.isJumping = true;
-            CharState("Jump");
-            rigdbody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
-            return;
-        }
-    }
-
-    //swordmaster Skill
-    public void Espada()
-    {
-        Debug.Log("espada");
-        GameObject EspadaTemp = (GameObject)Instantiate(esPadaSword, transform.position + new Vector3(0.0f, 10.0f, 10f), transform.rotation);
-        Destroy(EspadaTemp, 1.0f);
-    }
-
-    public void Maelstrom()
-    {
-        float maelstromSpeed = 3f;
-
-        skillTime += Time.deltaTime;
-
-        if (maelstromDistance <= 10.0f)
-        {
-            for (int i = 0; i < enermy.Length; i++)
-            {
-                //Vector3.Lerp (enermy[i].transform.position, this.transform.position, Time.deltaTime *maelstromSpeed);
-                enermy[i].transform.Translate((this.transform.position - enermy[i].transform.position) * maelstromSpeed * Time.deltaTime, Space.World);
-            }
-        }
-        if (skillTime >= 2)
-        {
-            mealstromState = false;
-            skillTime = 0;
-        }
-    }
-
-    public void CutOff()
-    {
-        CharState("CutOff");
-    }
-
-    public void CutOffMove()
-    {
-        Instantiate(Resources.Load<GameObject>("Effect/SwordShadow"), new Vector3(transform.position.x, transform.position.y + 1.0f, transform.position.z), Quaternion.identity);
-        transform.Translate(0, 0, 5);
-
-        //animation stop and keyboardinput Lock
-    }
-
-    public void UsingPotion()
-    {   //Potion Effect create
-        GameObject potionEffect = Instantiate(Resources.Load<GameObject>("Effect/Potion"), transform.position, Quaternion.identity) as GameObject;
-        potionEffect.transform.parent = gameObject.transform;
-        potionEffect.transform.position += Vector3.up;
-        StartCoroutine(Potion());
-    }
-
-    IEnumerator Potion()
-    {
-        for (int i = 0; i < potionCount; i++)
-        {
-            stat.healthPoint += (int)(stat.healthPoint * 0.3);
-            yield return new WaitForSeconds(1f);
-        }
-    }
-
+    //NetWork
     public CharacterState GetCharacterState(int state)
     {
         switch (state)
@@ -237,3 +367,4 @@ public class CharacterManager : MonoBehaviour
         //animator.SetBool(GetCharacterState(newStateData.state).ToString(), true);
     }
 }
+

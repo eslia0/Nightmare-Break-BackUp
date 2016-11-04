@@ -9,7 +9,7 @@ public class BoomMonster : Monster {
 	};
 
 	private float searchRange = 6.0f;
-	private float moveSpeed = 1f;
+	private float moveSpeed = 0f;
 
 	private float currentDisTance;
 
