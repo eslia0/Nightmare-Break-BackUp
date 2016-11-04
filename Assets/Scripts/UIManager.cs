@@ -18,9 +18,15 @@ public class UIManager : MonoBehaviour {
 
     void Awake()
     {
+        //characterInfo = GameObject.FindWithTag("Player").GetComponent<CharacterStatus>();
+        //characterSkill = GameObject.FindWithTag("Player").GetComponent<CharacterManager>();
+
+    }
+
+    void SetCharacter()
+    {
         characterInfo = GameObject.FindWithTag("Player").GetComponent<CharacterStatus>();
         characterSkill = GameObject.FindWithTag("Player").GetComponent<CharacterManager>();
-
     }
 
     /*
@@ -64,6 +70,6 @@ public class UIManager : MonoBehaviour {
         }
     }
     */
-  
+
 
 }

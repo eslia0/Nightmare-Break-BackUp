@@ -35,7 +35,7 @@ public class DataReceiver : MonoBehaviour
     public void TcpReceiveLengthCallback(IAsyncResult asyncResult)
     {
         AsyncData asyncData = (AsyncData)asyncResult.AsyncState;
-        Socket tcpSock = asyncData.tcpSock;
+        Socket tcpSock = asyncData.sock;
 
         try
         {
@@ -77,7 +77,7 @@ public class DataReceiver : MonoBehaviour
     void TcpReceiveDataCallback(IAsyncResult asyncResult)
     {
         AsyncData asyncData = (AsyncData)asyncResult.AsyncState;
-        Socket tcpSock = asyncData.tcpSock;
+        Socket tcpSock = asyncData.sock;
 
         try
         {
@@ -123,59 +123,18 @@ public class DataReceiver : MonoBehaviour
         //매개변수로 받은 리스트의 IPEndPoint에서 비동기 수신을 대기한다
         foreach (EndPoint newEndPoint in clients)
         {
-            AsyncData asyncData = new AsyncData(newEndPoint);
-            udpSock.BeginReceiveFrom(asyncData.msg, 0, NetworkManager.packetLength, SocketFlags.None, ref asyncData.EP, new AsyncCallback(UdpReceiveLengthCallback), asyncData);
+            AsyncData asyncData = new AsyncData(udpSock, newEndPoint);
+            udpSock.BeginReceiveFrom(asyncData.msg, 0, AsyncData.msgMaxSize, SocketFlags.None, ref asyncData.EP, new AsyncCallback(UdpReceiveDataCallback), asyncData);
             Debug.Log("수신시작 : " + newEndPoint);
         }
     }
 
-    //Udp 길이 수신
-    public void UdpReceiveLengthCallback(IAsyncResult asyncResult)
-    {
-        Debug.Log("Udp 길이 수신");
-        AsyncData asyncData = (AsyncData)asyncResult.AsyncState;
-
-        try
-        {
-            asyncData.msgSize = (short)udpSock.EndReceive(asyncResult);
-            Debug.Log("메시지 길이 받음");
-            Debug.Log(asyncData.EP);
-        }
-        catch
-        {
-            Console.WriteLine("DataReceiver::HandleAsyncReceiveLength.EndReceive 에러");
-            return;
-        }
-
-        if (asyncData.msgSize >= NetworkManager.packetLength)
-        {
-            short msgSize = 0;
-
-            try
-            {   //데이터 길이 변환에 성공하면 데이터를 받는다.
-                //남은 데이터는 데이터 출처 + 데이터 아이디 + 데이터
-                msgSize = BitConverter.ToInt16(asyncData.msg, 0);
-                asyncData = new AsyncData((IPEndPoint)asyncData.EP);
-                udpSock.BeginReceive(asyncData.msg, 0, msgSize + NetworkManager.packetSource + NetworkManager.packetId, SocketFlags.None, UdpReceiveDataCallback, asyncData);
-            }
-            catch
-            {   //데이터 길이 변환 실패시 다시 데이터 길이를 받는다.
-                Console.WriteLine("DataReceiver::HandleAsyncReceiveLength.BitConverter 에러");
-                asyncData = new AsyncData((IPEndPoint)asyncData.EP);
-                udpSock.BeginReceiveFrom(asyncData.msg, 0, NetworkManager.packetLength, SocketFlags.None, ref asyncData.EP, new AsyncCallback(UdpReceiveLengthCallback), asyncData);
-            }
-        }
-        else
-        {   //데이터 길이를 받지 못했을 시 다시 데이터 길이를 받는다
-            asyncData = new AsyncData((IPEndPoint)asyncData.EP);
-            udpSock.BeginReceiveFrom(asyncData.msg, 0, NetworkManager.packetLength, SocketFlags.None, ref asyncData.EP, new AsyncCallback(UdpReceiveLengthCallback), asyncData);
-        }
-    }
-
     //Udp 데이터 수신
+
     public void UdpReceiveDataCallback(IAsyncResult asyncResult)
     {
         AsyncData asyncData = (AsyncData)asyncResult.AsyncState;
+        udpSock = asyncData.sock;
 
         try
         {
@@ -191,9 +150,10 @@ public class DataReceiver : MonoBehaviour
 
         if (asyncData.msgSize > 0)
         {
-            //삭제 가능한지-
-            //Array.Resize(ref msg, asyncData.msgSize + NetworkManager.packetId + NetworkManager.packetSource);
-            DataPacket packet = new DataPacket(asyncData.msg, (IPEndPoint)asyncData.EP);
+            byte[] msgSize = ResizeByteArray(0, NetworkManager.packetLength, ref asyncData.msg);
+            Array.Resize(ref asyncData.msg, BitConverter.ToInt16(msgSize, 0) + NetworkManager.packetSource + NetworkManager.packetId);
+
+            DataPacket packet = new DataPacket(asyncData.msg, asyncData.EP);
 
             lock (receiveLock)
             {   //큐에 삽입
@@ -202,8 +162,8 @@ public class DataReceiver : MonoBehaviour
             }
 
             //다시 수신 준비
-            asyncData = new AsyncData((IPEndPoint)asyncData.EP);
-            udpSock.BeginReceiveFrom(asyncData.msg, 0, AsyncData.msgMaxSize, SocketFlags.None, ref asyncData.EP, new AsyncCallback(UdpReceiveLengthCallback), asyncData);
+            asyncData = new AsyncData(udpSock, asyncData.EP);
+            udpSock.BeginReceiveFrom(asyncData.msg, 0, AsyncData.msgMaxSize, SocketFlags.None, ref asyncData.EP, new AsyncCallback(UdpReceiveDataCallback), asyncData);
         }
     }
 
@@ -228,24 +188,24 @@ public class DataReceiver : MonoBehaviour
 //비동기 콜백을 위한 클래스
 public class AsyncData
 {
-    public Socket tcpSock;
+    public Socket sock;
     public EndPoint EP;
     public byte[] msg;
     public short msgSize;
     public const int msgMaxSize = 1024;
 
-    public AsyncData(EndPoint newEndPoint)
+    public AsyncData(Socket newSock)
     {
-        tcpSock = null;
-        EP = newEndPoint;
+        sock = newSock;
+        EP = null;
         msgSize = 0;
         msg = new byte[msgMaxSize];
     }
 
-    public AsyncData(Socket newSock)
+    public AsyncData(Socket newSock, EndPoint newEndPoint)
     {
-        tcpSock = newSock;
-        EP = null;
+        sock = newSock;
+        EP = newEndPoint;
         msgSize = 0;
         msg = new byte[msgMaxSize];
     }

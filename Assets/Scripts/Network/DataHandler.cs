@@ -115,7 +115,9 @@ public class DataHandler : MonoBehaviour
 
     public P2PPacketId ConnectionAnswer(byte[] data)
     {
-        DataSender.CreateResultPacket(new byte[1], P2PPacketId.ConnectionAnswer);
+        Debug.Log("연결 확인 답장");
+        dungeonManager = GameObject.Find("DungeonManager").GetComponent<DungeonManager>();
+        dungeonManager.CreatePlayer(0);
 
         return P2PPacketId.ConnectionAnswer;
     }
