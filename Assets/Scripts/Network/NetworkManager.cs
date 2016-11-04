@@ -13,14 +13,14 @@ public class NetworkManager : MonoBehaviour
     public const int packetId = 1;
 
     //테스트 중에서는 하나의 컴퓨터에서 진행하므로 다른 ip 대신에 다른 port를 이용한다
-    public const int mainServerPortNumber = 8900;
+    public const int mainServerPortNumber = 8800;
     public const int serverPortNumber = 9002;
     public const int clientPortNumber = 9003;
     public const int client1PortNumber = 9001;
     public static IPEndPoint mainServer = new IPEndPoint(IPAddress.Parse("192.168.94.88"), mainServerPortNumber);
-    public static IPEndPoint server = new IPEndPoint(IPAddress.Any, serverPortNumber);
-    public static IPEndPoint client = new IPEndPoint(IPAddress.Any, clientPortNumber);
-    public static IPEndPoint client1 = new IPEndPoint(IPAddress.Any, client1PortNumber);
+    public static IPEndPoint server = new IPEndPoint(IPAddress.Parse("192.168.94.88"), serverPortNumber);
+    public static IPEndPoint client = new IPEndPoint(IPAddress.Parse("192.168.94.88"), clientPortNumber);
+    public static IPEndPoint client1 = new IPEndPoint(IPAddress.Parse("192.168.94.88"), client1PortNumber);
 
     //udp Socket이 연결할 SocketList
     List<EndPoint> clients;
@@ -88,6 +88,7 @@ public class NetworkManager : MonoBehaviour
 
     public void SocketClose()
     {
+        serverSock.Close();
         clientSock.Close();
     }
 }

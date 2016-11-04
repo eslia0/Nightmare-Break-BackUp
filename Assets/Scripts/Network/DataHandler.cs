@@ -37,7 +37,6 @@ public class DataHandler : MonoBehaviour
         receiveLock = newReceiveLock;
 
         networkManager = GetComponent<NetworkManager>();
-        //dungeonManager = GameObject.Find("DungeonManager").GetComponent<DungeonManager>();
 
         SetServerNotifier();
         SetUdpNotifier();
@@ -46,7 +45,6 @@ public class DataHandler : MonoBehaviour
     public void SetServerNotifier()
     {
         server_notifier.Add((int)ServerPacketId.Match, Match);
-
     }
 
     public void SetUdpNotifier()
@@ -68,39 +66,28 @@ public class DataHandler : MonoBehaviour
 
             Debug.Log("Dequeue Message Length : " + msg.Length);
 
-            //출처 분리
-            byte source = msg[0];
-
-            //타입 분리
-            byte[] Id = DataReceiver.ResizeByteArray(1, NetworkManager.packetId, ref msg);
-
-            HeaderData headerData = new HeaderData();
-
-            Debug.Log(source);
-            Debug.Log(Id[0]);
-
-            if (source == (byte)Source.ServerSource)
+            if (packet.headerData.source == (byte)Source.ServerSource)
             {
-                if (server_notifier.TryGetValue(Id[0], out serverRecvNotifier))
+                if (server_notifier.TryGetValue(packet.headerData.id, out serverRecvNotifier))
                 {
                     ServerPacketId packetId = serverRecvNotifier(msg);
                 }
                 else
                 {
-                    Debug.Log("DataHandler::Server.TryGetValue 에러 " + Id);
-                    headerData.Id = (byte)ServerPacketId.None;
+                    Debug.Log("DataHandler::Server.TryGetValue 에러 " + packet.headerData.id);
+                    packet.headerData.id = (byte)ServerPacketId.None;
                 }
             }
-            else if (source == (byte)Source.ClientSource)
+            else if (packet.headerData.source == (byte)Source.ClientSource)
             {
-                if (p2p_notifier.TryGetValue(Id[0], out p2pRecvNotifier))
+                if (p2p_notifier.TryGetValue(packet.headerData.id, out p2pRecvNotifier))
                 {
                     P2PPacketId packetId = p2pRecvNotifier(msg);
                 }
                 else
                 {
-                    Debug.Log("DataHandler::P2P.TryGetValue 에러 " + Id);
-                    headerData.Id = (byte)P2PPacketId.None;
+                    Debug.Log("DataHandler::P2P.TryGetValue 에러 " + packet.headerData.id);
+                    packet.headerData.id = (byte)P2PPacketId.None;
                 }
             }
         }
@@ -154,11 +141,11 @@ public class DataHandler : MonoBehaviour
     //    AccountPacket accountPacket = new AccountPacket(data);
     //    AccountData accountData = accountPacket.GetData();
 
-    //    Debug.Log("아이디 : " + accountData.Id + "패스워드 : " + accountData.password);
+    //    Debug.Log("아이디 : " + accountData.id + "패스워드 : " + accountData.password);
 
     //    try
     //    {
-    //        if (database.AddAccountData(accountData.Id, accountData.password))
+    //        if (database.AddAccountData(accountData.id, accountData.password))
     //        {
     //            msg[0] = (byte)UnityServer.Result.Success;
     //            Debug.Log("가입 성공");
@@ -189,11 +176,11 @@ public class DataHandler : MonoBehaviour
     //    AccountPacket accountPacket = new AccountPacket(data);
     //    AccountData accountData = accountPacket.GetData();
 
-    //    Debug.Log("아이디 : " + accountData.Id + "패스워드 : " + accountData.Id);
+    //    Debug.Log("아이디 : " + accountData.id + "패스워드 : " + accountData.id);
 
     //    try
     //    {
-    //        if (database.DeleteAccountData(accountData.Id, accountData.password))
+    //        if (database.DeleteAccountData(accountData.id, accountData.password))
     //        {
     //            msg[0] = (byte)UnityServer.Result.Success;
     //            Debug.Log("탈퇴 성공");
@@ -224,27 +211,27 @@ public class DataHandler : MonoBehaviour
     //    AccountPacket accountPacket = new AccountPacket(data);
     //    AccountData accountData = accountPacket.GetData();
 
-    //    Debug.Log("아이디 : " + accountData.Id + "비밀번호 : " + accountData.password);
+    //    Debug.Log("아이디 : " + accountData.id + "비밀번호 : " + accountData.password);
 
     //    try
     //    {
-    //        if (database.AccountData.Contains(accountData.Id))
+    //        if (database.AccountData.Contains(accountData.id))
     //        {
-    //            if (((LoginData)database.AccountData[accountData.Id]).PW == accountData.password)
+    //            if (((LoginData)database.AccountData[accountData.id]).PW == accountData.password)
     //            {
-    //                if (!LoginUser.ContainsValue(accountData.Id))
+    //                if (!LoginUser.ContainsValue(accountData.id))
     //                {
     //                    msg[0] = (byte)UnityServer.Result.Success;
     //                    Debug.Log("로그인 성공");
-    //                    LoginUser.Add(tcpPacket.client, accountData.Id);
+    //                    LoginUser.Add(tcpPacket.client, accountData.id);
     //                }
     //                else
     //                {
     //                    Debug.Log("현재 접속중인 아이디입니다.");
 
-    //                    if (CompareIP(GetSocket(accountData.Id).RemoteEndPoint.ToString(), tcpPacket.client.RemoteEndPoint.ToString()))
+    //                    if (CompareIP(GetSocket(accountData.id).RemoteEndPoint.ToString(), tcpPacket.client.RemoteEndPoint.ToString()))
     //                    {
-    //                        LoginUser.Remove(GetSocket(accountData.Id));
+    //                        LoginUser.Remove(GetSocket(accountData.id));
     //                        Debug.Log("현재 접속중 해제");
     //                    }
     //                    msg[0] = (byte)UnityServer.Result.Fail;
@@ -320,9 +307,9 @@ public class DataHandler : MonoBehaviour
 
     //        if (LoginUser.ContainsKey(tcpPacket.client))
     //        {
-    //            string Id = LoginUser[tcpPacket.client];
-    //            database.FileSave(Id + ".data", database.GetAccountData(Id));
-    //            database.UserData.Remove(Id);
+    //            string id = LoginUser[tcpPacket.client];
+    //            database.FileSave(id + ".data", database.GetAccountData(id));
+    //            database.UserData.Remove(id);
 
     //            LoginUser.Remove(tcpPacket.client);
     //        }
@@ -337,14 +324,14 @@ public class DataHandler : MonoBehaviour
     //    return ServerPacketId.None;
     //}
 
-    //byte[] CreateHeader<T>(IPacket<T> data, ServerPacketId Id)
+    //byte[] CreateHeader<T>(IPacket<T> data, ServerPacketId id)
     //{
     //    byte[] msg = data.GetPacketData();
 
     //    HeaderData headerData = new HeaderData();
     //    HeaderSerializer headerSerializer = new HeaderSerializer();
 
-    //    headerData.Id = (byte)Id;
+    //    headerData.id = (byte)id;
     //    headerData.length = (short)msg.Length;
 
     //    headerSerializer.Serialize(headerData);
@@ -353,21 +340,21 @@ public class DataHandler : MonoBehaviour
     //    return header;
     //}
 
-    //byte[] CreatePacket<T>(IPacket<T> data, ServerPacketId Id)
+    //byte[] CreatePacket<T>(IPacket<T> data, ServerPacketId id)
     //{
     //    byte[] msg = data.GetPacketData();
-    //    byte[] header = CreateHeader(data, Id);
+    //    byte[] header = CreateHeader(data, id);
     //    byte[] packet = CombineByte(header, msg);
 
     //    return packet;
     //}
 
-    //byte[] CreateResultPacket(byte[] msg, ServerPacketId Id)
+    //byte[] CreateResultPacket(byte[] msg, ServerPacketId id)
     //{
     //    HeaderData headerData = new HeaderData();
     //    HeaderSerializer HeaderSerializer = new HeaderSerializer();
 
-    //    headerData.Id = (byte)Id;
+    //    headerData.id = (byte)id;
     //    headerData.length = (short)msg.Length;
     //    HeaderSerializer.Serialize(headerData);
     //    msg = CombineByte(HeaderSerializer.GetSerializedData(), msg);
@@ -386,11 +373,11 @@ public class DataHandler : MonoBehaviour
     //    }
     //}
 
-    //public Socket GetSocket(string Id)
+    //public Socket GetSocket(string id)
     //{
     //    foreach (KeyValuePair<Socket, string> client in LoginUser)
     //    {
-    //        if (client.Value == Id)
+    //        if (client.Value == id)
     //        {
     //            return client.Key;
     //        }
@@ -399,31 +386,18 @@ public class DataHandler : MonoBehaviour
     //    return null;
     //}
 
-    public static byte[] CombineByte(byte[] array1, byte[] array2)
-    {
-        byte[] array3 = new byte[array1.Length + array2.Length];
-        Array.Copy(array1, 0, array3, 0, array1.Length);
-        Array.Copy(array2, 0, array3, array1.Length, array2.Length);
-        return array3;
-    }
-
-    public static byte[] CombineByte(byte[] array1, byte[] array2, byte[] array3)
-    {
-        byte[] array4 = CombineByte(CombineByte(array1, array2), array3); ;
-        return array4;
-    }
 }
 
 [Serializable]
 public class TcpClient
 {
     public Socket client;
-    public string Id;
+    public string id;
 
     public TcpClient(Socket newClient)
     {
         client = newClient;
-        Id = "";
+        id = "";
     }
 }
 
@@ -432,5 +406,5 @@ public class HeaderData
     // 헤더 == [2바이트 - 패킷길이][1바이트 - ID]
     public short length; // 패킷의 길이
     public byte source;
-    public byte Id; // 패킷 ID
+    public byte id; // 패킷 ID
 }

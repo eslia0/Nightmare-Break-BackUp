@@ -92,9 +92,15 @@ public class DataReceiver : MonoBehaviour
 
         if (asyncData.msgSize >= NetworkManager.packetId)
         {
-            Array.Resize(ref asyncData.msg, asyncData.msgSize + NetworkManager.packetId + NetworkManager.packetSource);
+            Array.Resize(ref asyncData.msg, asyncData.msgSize + NetworkManager.packetSource + NetworkManager.packetId);
             Debug.Log(asyncData.msg.Length);
-            DataPacket packet = new DataPacket(asyncData.msg);
+
+            HeaderData headerData = new HeaderData();
+            HeaderSerializer headerSerializer = new HeaderSerializer();
+            headerSerializer.SetDeserializedData(asyncData.msg);
+            headerSerializer.Deserialize(ref headerData);
+
+            DataPacket packet = new DataPacket(headerData, asyncData.msg);
 
             lock (receiveLock)
             {
@@ -130,7 +136,6 @@ public class DataReceiver : MonoBehaviour
     }
 
     //Udp 데이터 수신
-
     public void UdpReceiveDataCallback(IAsyncResult asyncResult)
     {
         AsyncData asyncData = (AsyncData)asyncResult.AsyncState;
@@ -153,7 +158,12 @@ public class DataReceiver : MonoBehaviour
             byte[] msgSize = ResizeByteArray(0, NetworkManager.packetLength, ref asyncData.msg);
             Array.Resize(ref asyncData.msg, BitConverter.ToInt16(msgSize, 0) + NetworkManager.packetSource + NetworkManager.packetId);
 
-            DataPacket packet = new DataPacket(asyncData.msg, asyncData.EP);
+            HeaderData headerData = new HeaderData();
+            HeaderSerializer headerSerializer = new HeaderSerializer();
+            headerSerializer.SetDeserializedData(asyncData.msg);
+            headerSerializer.Deserialize(ref headerData);
+
+            DataPacket packet = new DataPacket(headerData, asyncData.msg, asyncData.EP);
 
             lock (receiveLock)
             {   //큐에 삽입
@@ -214,17 +224,20 @@ public class AsyncData
 public class DataPacket
 {
     public byte[] msg;
+    public HeaderData headerData;
     public EndPoint endPoint;
 
-    public DataPacket(byte[] newMsg)
+    public DataPacket(HeaderData newHeaderData, byte[] newMsg)
     {
         msg = newMsg;
+        headerData = newHeaderData;
         endPoint = null;
     }
 
-    public DataPacket(byte[] newMsg, EndPoint newEndPoint)
+    public DataPacket(HeaderData newHeaderData, byte[] newMsg, EndPoint newEndPoint)
     {
         msg = newMsg;
+        headerData = newHeaderData;
         endPoint = newEndPoint;
     }
 }

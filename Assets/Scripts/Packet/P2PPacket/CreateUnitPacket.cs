@@ -23,16 +23,16 @@
             }
 
             bool ret = true;
-            short Id = 0;
+            short id = 0;
             float posX = 0;
             float posY = 0;
             float posZ = 0;
 
-            ret &= Deserialize(ref Id);
+            ret &= Deserialize(ref id);
             ret &= Deserialize(ref posX);
             ret &= Deserialize(ref posY);
             ret &= Deserialize(ref posZ);
-            element = new CreateUnitData(Id, posX, posY, posZ);
+            element = new CreateUnitData(id, posX, posY, posZ);
 
             return ret;
         }
@@ -73,19 +73,19 @@
 
 public class CreateUnitData
 {
-    private short Id;
+    private short id;
     private float posX;
     private float posY;
     private float posZ;
 
-    public short ID { get { return Id; } }
+    public short ID { get { return id; } }
     public float PosX { get { return posX; } }
     public float PosY { get { return posY; } }
     public float PosZ { get { return posZ; } }
 
     public CreateUnitData()
     {
-        Id = 0;
+        id = 0;
         posX = 0;
         posY = 0;
         posZ = 0;
@@ -93,7 +93,7 @@ public class CreateUnitData
 
     public CreateUnitData(short newId, float newX, float newY, float newZ)
     {
-        Id = newId;
+        id = newId;
         posX = newX;
         posY = newY;
         posZ = newZ;

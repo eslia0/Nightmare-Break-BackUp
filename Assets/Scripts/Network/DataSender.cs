@@ -37,23 +37,25 @@ public class DataSender : MonoBehaviour
                 packet = sendMsgs.Dequeue();
             }
 
-            byte[] msg = packet.msg;
-            EndPoint endPoint = packet.endPoint;
+            Debug.Log("메시지 보냄 : " + packet.endPoint);
+            Debug.Log("메시지 보냄 (길이) : " + packet.headerData.length);
+            Debug.Log("메시지 보냄 (출처) : " + packet.headerData.source);
+            Debug.Log("메시지 보냄 (타입) : " + packet.headerData.id);
 
-            Debug.Log("메시지 보냄 : " + endPoint);
-            Debug.Log("메시지 보냄 (출처) : " + msg[2]);
-            Debug.Log("메시지 보냄 (타입) : " + msg[3]);
-            Debug.Log("메시지 보냄 (길이) : " + msg.Length);
+            HeaderSerializer headerSerializer = new HeaderSerializer();
+            headerSerializer.Serialize(packet.headerData);
 
-            if (endPoint != null)
+            byte[] header = headerSerializer.GetSerializedData();
+            byte[] msg = CombineByte(header, packet.msg);
+
+            if (packet.headerData.source != (byte)DataHandler.Source.ClientSource)
             {
-                udpSock.BeginSendTo(msg, 0, msg.Length, SocketFlags.None, endPoint, new AsyncCallback(SendData), null);
+                udpSock.BeginSendTo(msg, 0, msg.Length, SocketFlags.None, packet.endPoint, new AsyncCallback(SendData), null);
             }
-            else
+            else if(packet.headerData.source != (byte)DataHandler.Source.ServerSource)
             {
                 tcpSock.Send(msg, 0, msg.Length, SocketFlags.None);
             }
-
         }
     }
 
@@ -71,9 +73,8 @@ public class DataSender : MonoBehaviour
         foreach (EndPoint client in newEndPoint)
         {
             Debug.Log(client.ToString());
-            byte[] msg = CreateResultPacket(new byte[1], P2PPacketId.ConnectionCheck);
-
-            DataPacket packet = new DataPacket(msg, client);
+            DataPacket packet = CreateResultPacket(new byte[1], (int)P2PPacketId.ConnectionCheck);
+            packet.endPoint = client;
             sendMsgs.Enqueue(packet);
         }
     }
@@ -81,17 +82,16 @@ public class DataSender : MonoBehaviour
     //캐릭터의 생성을 보내주는 메소드
     public void CreateUnitSend(short newId, Vector3 position)
     {
-        short Id = newId;
+        short id = newId;
         float xPos = position.x;
         float yPos = position.y;
         float zPos = position.z;
 
-        CreateUnitData createUnitData = new CreateUnitData(Id, xPos, yPos, zPos);
+        CreateUnitData createUnitData = new CreateUnitData(id, xPos, yPos, zPos);
         CreateUnitDataPacket createUnitDataPacket = new CreateUnitDataPacket(createUnitData);
 
-        byte[] msg = CreatePacket(createUnitDataPacket, P2PPacketId.CreateUnit);
-
-        DataPacket packet = new DataPacket(msg, NetworkManager.client1);
+        DataPacket packet = CreatePacket(createUnitDataPacket.GetPacketData(), P2PPacketId.CreateUnit);
+        packet.endPoint = NetworkManager.client1;
         sendMsgs.Enqueue(packet);
     }
 
@@ -114,56 +114,68 @@ public class DataSender : MonoBehaviour
 
             CharacterStateData characterStateData = new CharacterStateData(state, direction, horizontal, vertical, xPos, yPos, zPos);
             CharacterStateDataPacket characterStateDataPacket = new CharacterStateDataPacket(characterStateData);
-
-            byte[] msg = CreatePacket(characterStateDataPacket, P2PPacketId.CharacterState);
-
+            
             //현재는 client로 고정되있지만
             //차후 수정으로 매개변수 newIPEndPoint를 설정하여 여러명의 클라이언트에 동시에 보내도록 수정할 예정
-            DataPacket packet = new DataPacket(msg, NetworkManager.client1);
+            DataPacket packet = CreatePacket(characterStateDataPacket.GetPacketData(), P2PPacketId.CharacterState);
+            packet.endPoint = NetworkManager.client1;
             sendMsgs.Enqueue(packet);
         }
     }
 
-    //패킷의 헤더 부분을 생성하는 메소드
-    byte[] CreateHeader<T>(IPacket<T> data, P2PPacketId Id)
+    public void GameClose()
     {
-        byte[] msg = data.GetPacketData();
+        DataPacket packet = CreateResultPacket(new byte[0], (int)ServerPacketId.GameClose);
+    }
 
+    //패킷의 헤더 부분을 생성하는 메소드
+    HeaderData CreateHeader(short msgSize, P2PPacketId id)
+    {
         HeaderData headerData = new HeaderData();
         HeaderSerializer headerSerializer = new HeaderSerializer();
 
-        headerData.Id = (byte)Id;
+        headerData.id = (byte)id;
         headerData.source = (byte)DataHandler.Source.ClientSource;
-        headerData.length = (short)msg.Length;
+        headerData.length = (short)msgSize;
 
-        headerSerializer.Serialize(headerData);
-        byte[] header = headerSerializer.GetSerializedData();
-
-        return header;
+        return headerData;
     }
 
-    public static byte[] CreateResultPacket(byte[] msg, P2PPacketId Id)
+    public static DataPacket CreateResultPacket(byte[] msg, int id)
     {
         HeaderData headerData = new HeaderData();
         HeaderSerializer HeaderSerializer = new HeaderSerializer();
 
-        headerData.Id = (byte)Id;
+        headerData.id = (byte)id;
         headerData.source = (byte)DataHandler.Source.ClientSource;
         headerData.length = (short)msg.Length;
 
-        HeaderSerializer.Serialize(headerData);
-        msg = DataHandler.CombineByte(HeaderSerializer.GetSerializedData(), msg);
-        return msg;
+        DataPacket dataPacket = new DataPacket(headerData, msg);
+
+        return dataPacket;
     }
 
     //패킷을 생성하는 메소드. 데이터 패킷과 패킷아이디를 적어주면 알아서 합쳐준다.
     //Send를 하기 전 반드시 해야한다.
-    byte[] CreatePacket<T>(IPacket<T> data, P2PPacketId Id)
+    DataPacket CreatePacket(byte[] msg, P2PPacketId id)
     {
-        byte[] msg = data.GetPacketData();
-        byte[] header = CreateHeader(data, Id);
-        byte[] packet = DataHandler.CombineByte(header, msg);
+        HeaderData header = CreateHeader((short)msg.Length, id);
+        DataPacket packet = new DataPacket(header, msg);
 
         return packet;
+    }
+
+    public static byte[] CombineByte(byte[] array1, byte[] array2)
+    {
+        byte[] array3 = new byte[array1.Length + array2.Length];
+        Array.Copy(array1, 0, array3, 0, array1.Length);
+        Array.Copy(array2, 0, array3, array1.Length, array2.Length);
+        return array3;
+    }
+
+    public static byte[] CombineByte(byte[] array1, byte[] array2, byte[] array3)
+    {
+        byte[] array4 = CombineByte(CombineByte(array1, array2), array3); ;
+        return array4;
     }
 }

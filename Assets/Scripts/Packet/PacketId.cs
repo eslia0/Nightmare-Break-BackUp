@@ -15,6 +15,7 @@ public enum ServerPacketId
     DeleteResult,
     LoginResult,
     Match,
+    GameClose,
 }
 
 public enum P2PPacketId
