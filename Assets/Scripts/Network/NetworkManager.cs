@@ -18,9 +18,9 @@ public class NetworkManager : MonoBehaviour
     public const int clientPortNumber = 9003;
     public const int client1PortNumber = 9001;
     public static IPEndPoint mainServer = new IPEndPoint(IPAddress.Parse("192.168.94.88"), mainServerPortNumber);
-    public static IPEndPoint server = new IPEndPoint(IPAddress.Parse("192.168.94.88"), serverPortNumber);
-    public static IPEndPoint client = new IPEndPoint(IPAddress.Parse("192.168.94.88"), clientPortNumber);
-    public static IPEndPoint client1 = new IPEndPoint(IPAddress.Parse("192.168.94.88"), client1PortNumber);
+    public static IPEndPoint server = new IPEndPoint(IPAddress.Any, serverPortNumber);
+    public static IPEndPoint client = new IPEndPoint(IPAddress.Any, clientPortNumber);
+    public static IPEndPoint client1 = new IPEndPoint(IPAddress.Any, client1PortNumber);
 
     //udp Socket이 연결할 SocketList
     List<EndPoint> clients;
