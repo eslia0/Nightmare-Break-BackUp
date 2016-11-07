@@ -29,12 +29,10 @@ public class GameManager : MonoBehaviour
         dungeonManager = (Instantiate(Resources.Load("Manager/DungeonManager")) as GameObject).GetComponent<DungeonManager>();
         dungeonManager.name = "DungeonManager";
         dungeonManager.InitializeManager();
-        dungeonManager.CreatePlayer(0);
 
         inputManager = (Instantiate(Resources.Load("Manager/InputManager")) as GameObject).GetComponent<InputManager>();
         inputManager.name = "InputManager";
         inputManager.tag = "InputManager";
-        inputManager.InitializeManager();
     }
 
     public void OnApplicationQuit()

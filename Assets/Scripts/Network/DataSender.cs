@@ -48,11 +48,11 @@ public class DataSender : MonoBehaviour
             byte[] header = headerSerializer.GetSerializedData();
             byte[] msg = CombineByte(header, packet.msg);
 
-            if (packet.headerData.source != (byte)DataHandler.Source.ClientSource)
+            if (packet.headerData.source == (byte)DataHandler.Source.ClientSource)
             {
                 udpSock.BeginSendTo(msg, 0, msg.Length, SocketFlags.None, packet.endPoint, new AsyncCallback(SendData), null);
             }
-            else if(packet.headerData.source != (byte)DataHandler.Source.ServerSource)
+            else if(packet.headerData.source == (byte)DataHandler.Source.ServerSource)
             {
                 tcpSock.Send(msg, 0, msg.Length, SocketFlags.None);
             }

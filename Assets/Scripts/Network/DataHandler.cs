@@ -30,6 +30,7 @@ public class DataHandler : MonoBehaviour
     private Dictionary<int, ServerRecvNotifier> server_notifier = new Dictionary<int, ServerRecvNotifier>();
 
     DungeonManager dungeonManager;
+    InputManager inputManager;
 
     public void Initialize(Queue<DataPacket> receiveQueue, object newReceiveLock, Queue<DataPacket> sendQueue, object newSendLock)
     {
@@ -104,7 +105,9 @@ public class DataHandler : MonoBehaviour
     {
         Debug.Log("연결 확인 답장");
         dungeonManager = GameObject.Find("DungeonManager").GetComponent<DungeonManager>();
+        inputManager = GameObject.Find("InputManager").GetComponent<InputManager>();
         dungeonManager.CreatePlayer(0);
+        inputManager.InitializeManager();
 
         return P2PPacketId.ConnectionAnswer;
     }
