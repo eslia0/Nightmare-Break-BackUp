@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class InputManager : MonoBehaviour
 {
@@ -9,67 +10,52 @@ public class InputManager : MonoBehaviour
     Vector3 cameraDistance;
 
     public CharacterManager characterManager;
-
-    void Awake()
-    {
-        cameraDistance = new Vector3(11f, 6.5f, 0);
-    }
-
+    
     public void InitializeManager()
     {
         characterManager = GameObject.FindGameObjectWithTag("Player").GetComponent<CharacterManager>();
+        StartCoroutine(GetKeyInput());
     }
 
-    void Update()
+    public IEnumerator GetKeyInput()
     {
-        GetKeyInput();
-        //Camera.main.transform.rotation = new Quaternion (12, -90, 0, Camera.main.transform.rotation.w);
-    }
-
-    public void GetKeyInput()
-    {
-        vertical = Input.GetAxisRaw("Vertical");
-        horizontal = Input.GetAxisRaw("Horizontal");
-        characterManager.Move(vertical, horizontal);
-
-        if (Input.GetKeyDown(KeyCode.T))
+        while (true)
         {
-            characterManager.UsingPotion();
-        }
+            yield return null;
 
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            characterManager.NormalAttack();
-        }
+            vertical = Input.GetAxisRaw("Vertical");
+            horizontal = Input.GetAxisRaw("Horizontal");
+            characterManager.Move(vertical, horizontal);
 
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            characterManager.Jump();
-        }
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                characterManager.UsingPotion();
+            }
 
-        if (Input.GetButtonDown("Skill1"))
-        {
-            characterManager.mealstromState = true;
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                characterManager.NormalAttack();
+            }
 
-        }
-        else if (Input.GetButtonDown("Skill2"))
-        {
-            characterManager.CutOff();
-        }
-        else if (Input.GetButtonDown("Skill3"))
-        {
-            characterManager.Espada();
-        }
-    }
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                characterManager.Jump();
+            }
 
-    public void LateUpdate()
-    {
-        //update camera sight
-        CameraCtrl();
-    }
+            if (Input.GetButtonDown("Skill1"))
+            {
+                characterManager.mealstromState = true;
+            }
 
-    public void CameraCtrl()
-    {
-        Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, characterManager.transform.position + cameraDistance, Time.deltaTime * 10);
+            else if (Input.GetButtonDown("Skill2"))
+            {
+                characterManager.CutOff();
+            }
+
+            else if (Input.GetButtonDown("Skill3"))
+            {
+                characterManager.Espada();
+            }
+        }        
     }
 }

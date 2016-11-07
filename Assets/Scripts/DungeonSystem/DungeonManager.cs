@@ -13,7 +13,7 @@ public class DungeonManager : MonoBehaviour
 
     public void InitializeManager()
     {
-        dataSender = GameObject.Find("NetworkManager").GetComponent<DataSender>();
+        dataSender = GameObject.FindGameObjectWithTag("NetworkManager").GetComponent<DataSender>();
     }
 
     protected bool modeForm; //false  -> normalBattle, true -> Defence; 
