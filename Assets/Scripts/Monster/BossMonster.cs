@@ -152,7 +152,7 @@ public class BossMonster : Monster {
 
 			} else if (currentBaseState.IsName ("BigSmash")) {
 				
-				yield return new WaitForSeconds (0.5f);
+				yield return new WaitForSeconds (1.0f);
 
 				if (bulletCount == 0) {
 				    
@@ -161,9 +161,9 @@ public class BossMonster : Monster {
 				}
 				yield return new WaitForSeconds (1.0f);
 			} else if (currentBaseState.IsName ("Roar")) {
-				yield return new WaitForSeconds (0.3f);
+				
 				GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<RedRenderImage> ().enabled = true;
-				yield return new WaitForSeconds (1.0f);
+				yield return new WaitForSeconds (1.7f);
 				GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<RedRenderImage> ().enabled = false;
 			} else if (currentBaseState.IsName ("Idle")) {
 				changeDirection ();
@@ -172,7 +172,7 @@ public class BossMonster : Monster {
 			} else if (currentBaseState.IsName ("Walk")) {
 				changeDirection ();
 			}
-			yield return null;
+			yield return new WaitForSeconds (0.01f);
 		}
 	}
 
@@ -184,4 +184,9 @@ public class BossMonster : Monster {
 		transform.LookAt (vecLookPos);
 
 	}
+	void  OnTriggerEnter(Collider coll){
+		//플레이어 공격시 collider 충돌 부분
+
+	}
+
 }
