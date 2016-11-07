@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Collections.Generic;
@@ -10,14 +11,14 @@ public class NetworkManager : MonoBehaviour
     //패킷의 종류
     public const int packetLength = 2;
     public const int packetSource = 1;
-    public const int packetId = 1;
+    public const int packetId = 1;    
 
     //테스트 중에서는 하나의 컴퓨터에서 진행하므로 다른 ip 대신에 다른 port를 이용한다
     public const int mainServerPortNumber = 8800;
-    public const int serverPortNumber = 9000;
+    public const int serverPortNumber = 9002;
     public const int clientPortNumber = 9001;
     public const int client1PortNumber = 9003;
-    public static IPEndPoint mainServer = new IPEndPoint(IPAddress.Parse("192.168.94.88"), mainServerPortNumber);
+    public IPEndPoint mainServer;
     public static IPEndPoint server = new IPEndPoint(IPAddress.Parse("192.168.94.88"), serverPortNumber);
     public static IPEndPoint client = new IPEndPoint(IPAddress.Parse("192.168.94.88"), clientPortNumber);
     public static IPEndPoint client1 = new IPEndPoint(IPAddress.Parse("192.168.94.88"), client1PortNumber);
@@ -40,19 +41,22 @@ public class NetworkManager : MonoBehaviour
     public DataReceiver DataReceiver { get { return dataReceiver; } }
     public DataHandler DataHandler { get { return dataHandler; } }
     public DataSender DataSender { get { return dataSender; } }
-
-    public void InitializeManager()
+    
+    public void InitializeManager(string ip)
     {
+        mainServer = new IPEndPoint(IPAddress.Parse(ip), mainServerPortNumber);
+
         receiveMsgs = new Queue<DataPacket>();
         sendMsgs = new Queue<DataPacket>();
         receiveLock = new object();
         sendLock = new object();
 
         serverSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        serverSock.Bind(server);
 
         clientSock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         clientSock.Bind(client);
+
+        ConnectServer();
 
         dataReceiver = GetComponent<DataReceiver>();
         dataHandler = GetComponent<DataHandler>();
@@ -70,9 +74,9 @@ public class NetworkManager : MonoBehaviour
             serverSock.Connect(mainServer);
             Debug.Log("서버 연결 성공");
         }
-        catch
+        catch(Exception e)
         {
-            Debug.Log("서버 연결 실패");
+            Debug.Log("서버 연결 실패" + e.Message);
         }
     }
 
@@ -88,7 +92,8 @@ public class NetworkManager : MonoBehaviour
 
     public void SocketClose()
     {
-        serverSock.Close();
+        Debug.Log("소켓 닫기");
         clientSock.Close();
+        serverSock.Close();
     }
 }

@@ -10,10 +10,10 @@ public class DungeonManager : MonoBehaviour
     public GameObject[] Players { get { return players; } }
 
     DataSender dataSender;
+    GameObject m_camera;
 
     public void InitializeManager()
     {
-        dataSender = GameObject.FindGameObjectWithTag("NetworkManager").GetComponent<DataSender>();
     }
 
     protected bool modeForm; //false  -> normalBattle, true -> Defence; 
@@ -122,6 +122,10 @@ public class DungeonManager : MonoBehaviour
         player.tag = "Player";
         players[0] = player;
 
+        m_camera = GameObject.FindGameObjectWithTag("MainCamera");
+        StartCoroutine(m_camera.GetComponent<CameraController>().CameraCtrl(player.transform));
+
+        dataSender = GameObject.FindGameObjectWithTag("NetworkManager").GetComponent<DataSender>();
         dataSender.CreateUnitSend(0, player.transform.position);
 
         return player;

@@ -46,7 +46,6 @@ public class DataReceiver : MonoBehaviour
         catch (Exception e)
         {
             Debug.Log("연결 끊김 : " + e.Message);
-            tcpSock.Close();
             return;
         }
 

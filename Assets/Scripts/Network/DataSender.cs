@@ -73,7 +73,7 @@ public class DataSender : MonoBehaviour
         foreach (EndPoint client in newEndPoint)
         {
             Debug.Log(client.ToString());
-            DataPacket packet = CreateResultPacket(new byte[1], (int)P2PPacketId.ConnectionCheck);
+            DataPacket packet = CreateResultPacket(new byte[1], (int)DataHandler.Source.ClientSource, (int)P2PPacketId.ConnectionCheck);
             packet.endPoint = client;
             sendMsgs.Enqueue(packet);
         }
@@ -90,7 +90,7 @@ public class DataSender : MonoBehaviour
         CreateUnitData createUnitData = new CreateUnitData(id, xPos, yPos, zPos);
         CreateUnitDataPacket createUnitDataPacket = new CreateUnitDataPacket(createUnitData);
 
-        DataPacket packet = CreatePacket(createUnitDataPacket.GetPacketData(), P2PPacketId.CreateUnit);
+        DataPacket packet = CreatePacket(createUnitDataPacket.GetPacketData(), (int)DataHandler.Source.ClientSource, P2PPacketId.CreateUnit);
         packet.endPoint = NetworkManager.client1;
         sendMsgs.Enqueue(packet);
     }
@@ -117,7 +117,7 @@ public class DataSender : MonoBehaviour
             
             //현재는 client로 고정되있지만
             //차후 수정으로 매개변수 newIPEndPoint를 설정하여 여러명의 클라이언트에 동시에 보내도록 수정할 예정
-            DataPacket packet = CreatePacket(characterStateDataPacket.GetPacketData(), P2PPacketId.CharacterState);
+            DataPacket packet = CreatePacket(characterStateDataPacket.GetPacketData(), (int)DataHandler.Source.ClientSource, P2PPacketId.CharacterState);
             packet.endPoint = NetworkManager.client1;
             sendMsgs.Enqueue(packet);
         }
@@ -125,29 +125,45 @@ public class DataSender : MonoBehaviour
 
     public void GameClose()
     {
-        DataPacket packet = CreateResultPacket(new byte[0], (int)ServerPacketId.GameClose);
+        Debug.Log("게임 종료");
+        DataPacket packet = CreateResultPacket(new byte[1], (int)DataHandler.Source.ServerSource, (int)ClientPacketId.GameClose);
+
+        HeaderSerializer headerSerializer = new HeaderSerializer();
+        headerSerializer.Serialize(packet.headerData);
+
+        byte[] header = headerSerializer.GetSerializedData();
+        byte[] msg = CombineByte(header, packet.msg);
+
+        Debug.Log("메시지 보냄 (길이) : " + msg.Length);
+        Debug.Log("메시지 보냄 (출처) : " + msg[2]);
+        Debug.Log("메시지 보냄 (타입) : " + msg[3]);
+
+        tcpSock.Send(msg, 0, msg.Length, SocketFlags.None);
+
+        tcpSock.Close();
+        udpSock.Close();
     }
 
     //패킷의 헤더 부분을 생성하는 메소드
-    HeaderData CreateHeader(short msgSize, P2PPacketId id)
+    HeaderData CreateHeader(short msgSize, int source, P2PPacketId id)
     {
         HeaderData headerData = new HeaderData();
         HeaderSerializer headerSerializer = new HeaderSerializer();
 
         headerData.id = (byte)id;
-        headerData.source = (byte)DataHandler.Source.ClientSource;
-        headerData.length = (short)msgSize;
+        headerData.source = (byte)source;
+        headerData.length = msgSize;
 
         return headerData;
     }
 
-    public static DataPacket CreateResultPacket(byte[] msg, int id)
+    public static DataPacket CreateResultPacket(byte[] msg, int source, int id)
     {
         HeaderData headerData = new HeaderData();
         HeaderSerializer HeaderSerializer = new HeaderSerializer();
 
         headerData.id = (byte)id;
-        headerData.source = (byte)DataHandler.Source.ClientSource;
+        headerData.source = (byte)source;
         headerData.length = (short)msg.Length;
 
         DataPacket dataPacket = new DataPacket(headerData, msg);
@@ -157,9 +173,9 @@ public class DataSender : MonoBehaviour
 
     //패킷을 생성하는 메소드. 데이터 패킷과 패킷아이디를 적어주면 알아서 합쳐준다.
     //Send를 하기 전 반드시 해야한다.
-    DataPacket CreatePacket(byte[] msg, P2PPacketId id)
+    DataPacket CreatePacket(byte[] msg, int source, P2PPacketId id)
     {
-        HeaderData header = CreateHeader((short)msg.Length, id);
+        HeaderData header = CreateHeader((short)msg.Length, source, id);
         DataPacket packet = new DataPacket(header, msg);
 
         return packet;

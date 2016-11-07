@@ -6,6 +6,11 @@ public class GameManager : MonoBehaviour
     NetworkManager networkManager;
     InputManager inputManager;
 
+    [SerializeField]
+    string ip;
+    [SerializeField]
+    string port;
+
     void Start()
     {
         InitializeManager();
@@ -13,7 +18,6 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        //inputManager.GetKeyInput();
         networkManager.DataHandler.DataHandle();
         networkManager.DataSender.DataSend();
     }
@@ -23,8 +27,7 @@ public class GameManager : MonoBehaviour
         networkManager = (Instantiate(Resources.Load("Manager/NetworkManager")) as GameObject).GetComponent<NetworkManager>();
         networkManager.name = "NetworkManager";
         networkManager.tag = "NetworkManager";
-        networkManager.InitializeManager();
-        networkManager.ConnectServer();
+        networkManager.InitializeManager(ip);
 
         dungeonManager = (Instantiate(Resources.Load("Manager/DungeonManager")) as GameObject).GetComponent<DungeonManager>();
         dungeonManager.name = "DungeonManager";
@@ -38,7 +41,7 @@ public class GameManager : MonoBehaviour
     public void OnApplicationQuit()
     {
         Debug.Log("Game Exit");
-        networkManager.SocketClose();
+        networkManager.DataSender.GameClose();
     }
 }
 

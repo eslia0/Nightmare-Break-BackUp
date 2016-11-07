@@ -12,10 +12,12 @@ public class CameraController : MonoBehaviour
     
     public IEnumerator CameraCtrl(Transform character)
     {
+        SetCameraDistance();
+
         while (true)
         {
             yield return new WaitForEndOfFrame();
-            Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, transform.position + cameraDistance, Time.deltaTime * 10);
+            Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, character.position + cameraDistance, Time.deltaTime * 10);
         }
     }
 }
