@@ -15,6 +15,21 @@ public class BoomMonster : Monster {
 	private Vector3 boomPoint = new Vector3(100,100,100);
 	private Vector3 attackPoint = new Vector3 (1, 0, 0);
 
+	private bool a;
+
+
+	//test
+	IEnumerator TestCount(bool _a){
+		if(_a){
+			a=false;
+		}
+		if(!_a){
+			a=true;
+		}
+		Debug.Log (_a);
+			yield return new WaitForSeconds (0.1f);
+		StopCoroutine (TestCount (a));
+	}
 
 	public enum StatePosition
 	{
@@ -157,21 +172,83 @@ public class BoomMonster : Monster {
 					//Debug.Log (animator.GetCurrentAnimatorStateInfo (0));
                 }
             
-				attackCycle += Time.deltaTime;
+
 			}
-			adf += Time.deltaTime;
+
 
 		}
         if (!IsAlive)
         {
             Pattern(StatePosition.Death);
         }
+
     }
-	//AttackMotion collider sumon
-	float adf;
-	 
+
+
+
+	//change updateconduct -> updateConduct1;
+	public IEnumerator UpdateConduct1()
+	{
+		if (IsAlive)
+		{
+			ChasePlayer();// playerchase;
+
+			if (targetPlayer != null)
+			{
+				currentDisTance = Vector3.Distance(targetPlayer.transform.position, this.gameObject.transform.position);
+				checkDirection = targetPlayer.transform.position - this.gameObject.transform.position;
+
+				if (currentDisTance > searchRange)
+				{
+					Pattern(StatePosition.Idle);
+					Debug.Log ("idle");
+				}
+				//if this object get Attackmotion pattern(stateposition.boom -> attack), and this monsterlife is 20%, boomPattern start;
+				else if (currentDisTance <= searchRange)
+				{
+
+					movePoint = new Vector3(checkDirection.x, 0, checkDirection.z);
+
+					if (currentDisTance >= searchRange * 0.2f)
+					{
+						if (moveAble) {
+							Pattern (StatePosition.Run);
+							Debug.Log ("Run");
+						}
+					}
+					if (currentDisTance < searchRange * 0.2f)
+					{
+						if (!isAttack) {
+							isAttack = true;
+							Pattern (StatePosition.Attack);
+						}
+
+					}
+					if (currentLife / maxLife < 0.2)
+					{
+						Pattern(StatePosition.Boom);
+					}
+
+
+
+					//Debug.Log (animator.GetCurrentAnimatorStateInfo (0));
+				}
+
+
+			}
+
+
+		}
+		if (!IsAlive)
+		{
+			Pattern(StatePosition.Death);
+		}
+		yield return new WaitForSeconds (0.16f);
+	}
+
+
 	void OnTriggerEnter(Collider coll){
-		if(adf > 0.3f){
+
 		Debug.Log ("hit");
 		//if (coll.gameObject.layer == LayerMask.NameToLayer("Weapon")) {
 			Pattern (StatePosition.TakeDamage);
@@ -180,12 +257,7 @@ public class BoomMonster : Monster {
 
 			//BCM.DamageCarculateProcess (coll.gameObject.transform.parent.GetComponent<CharcterPlayer> (), this.gameObject.GetComponent<Monster> (), coll.gameObject);
 		//}
-			adf = 0;
-		}
+
+		//Takedamage cooldown need;
 	}
-
-
-
-
-
 }

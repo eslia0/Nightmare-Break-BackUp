@@ -1,10 +1,15 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Network\NetworkManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Monster\BoomMonster.cs">
     <Files>
       <File FileName="Assets\Scripts\Character\InputManager.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Network\NetworkManager.cs" Line="23" Column="85" />
-      <File FileName="Assets\Scripts\GameManager.cs" Line="6" Column="15" />
+      <File FileName="Assets\Scripts\Network\NetworkManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\GameManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Monster\BoomMonster.cs" Line="184" Column="3" />
+      <File FileName="Assets\Scripts\DungeonSystem\Monster.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\Character\CharacterManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\DungeonSystem\DungeonManager.cs" Line="26" Column="17" />
+      <File FileName="Assets\Scripts\DungeonSystem\Section.cs" Line="30" Column="37" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
