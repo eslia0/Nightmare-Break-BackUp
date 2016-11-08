@@ -2,10 +2,11 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class UIManager : MonoBehaviour {
+public class UIManager : MonoBehaviour
+{
 
     [SerializeField]
-	private Image hpUI;
+    private Image hpUI;
     [SerializeField]
     private Image mpUI;
     [SerializeField]
@@ -13,21 +14,55 @@ public class UIManager : MonoBehaviour {
     private const float checkTime = 0.1f;
     [SerializeField]
     private Image[] skillUI; // 0 - SKill1 // 1 - SKill2 // 2 - Skill3 // 3 - Skill4 //
-    private CharacterStatus characterInfo;
-    private CharacterManager characterSkill;
 
-    void Awake()
+
+    public IEnumerator SkillCoolTimeUI(int skillNum, float coolTime)
     {
-        //characterInfo = GameObject.FindWithTag("Player").GetComponent<CharacterStatus>();
-        //characterSkill = GameObject.FindWithTag("Player").GetComponent<CharacterManager>();
+        skillUI[skillNum].fillAmount = 0;
+
+        float time = Time.smoothDeltaTime;
+
+        while (skillUI[skillNum].fillAmount <= 1.0f)
+        {
+            skillUI[skillNum].fillAmount += 1 * time / coolTime;
+            yield return null;
+            if (skillUI[skillNum].fillAmount >= 1.0f)
+            {
+                time = 0;
+            }
+        }
+
+        yield break;
+    }
+
+    public IEnumerator PotionCoolTimeUI()
+    {
+        float potionCoolTime = 15.0f;
+        float time = Time.smoothDeltaTime;
+        potionUI.fillAmount = 0;
+        while (potionUI.fillAmount <= 1.0f)
+        {
+            potionUI.fillAmount += 1 * time / potionCoolTime;
+            yield return null;
+            if (potionUI.fillAmount >= 1.0f)
+            {
+                time = 0;
+            }
+        }
+        yield break;
+    }
+
+    void HpUI(float currentHP)
+    {
 
     }
 
-    void SetCharacter()
+    void MpUI(float currentMP)
     {
-        characterInfo = GameObject.FindWithTag("Player").GetComponent<CharacterStatus>();
-        characterSkill = GameObject.FindWithTag("Player").GetComponent<CharacterManager>();
+
     }
+
+
 
     /*
     IEnumerator HealthPointUI()
