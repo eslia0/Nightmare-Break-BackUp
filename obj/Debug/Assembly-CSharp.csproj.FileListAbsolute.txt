@@ -100,6 +100,5 @@ C:\Users\User\Documents\Nightmare-Break\Temp\bin\Debug\UnityEngine.xml
 C:\Users\User\Documents\Nightmare-Break\Temp\bin\Debug\UnityEditor.xml
 C:\Users\User\Documents\Nightmare-Break\Temp\bin\Debug\UnityEngine.UI.xml
 C:\Users\User\Documents\Nightmare-Break\Temp\bin\Debug\UnityEngine.Networking.xml
-C:\Users\User\Documents\Nightmare-Break\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache
 C:\Users\User\Documents\Nightmare-Break\obj\Debug\Assembly-CSharp.dll
 C:\Users\User\Documents\Nightmare-Break\obj\Debug\Assembly-CSharp.pdb

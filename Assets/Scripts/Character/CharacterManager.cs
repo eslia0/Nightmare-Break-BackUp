@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class CharacterManager : MonoBehaviour
 {
+		
 	public enum CharacterState
 	{
 		Idle = 0,
@@ -16,29 +18,27 @@ public class CharacterManager : MonoBehaviour
 
 	Animator animator;
 	public Renderer rend;
-
+	AnimatorStateInfo runState;
+	public CharacterStatus charstate;
 	public float skillTime;
 
-
-	public float charSpeed;
-	public float jumpPower;
-	public Rigidbody rigdbody;
 	public bool mealstromState;
 
 	public bool charVer;
 	public bool JumpMove;
-
-	AnimatorStateInfo runState;
+	public Rigidbody rigdbody;
 
 	public InputManager inputmanager;
 
 	public GameObject[] enemy;
 	public GameObject wall;
 
-
 	private CharacterStatus stat;
 	private int potionCount = 3;
-	public int[] skillCoolTime;
+
+	public float charSpeed;
+	public float jumpPower;
+	public bool charAlive = true;
 
 	//espadasword
 	public GameObject esPadaSword;
@@ -52,8 +52,9 @@ public class CharacterManager : MonoBehaviour
 
 	[SerializeField]CharacterState state;
 
-	public CharacterState State { get { return state; } }
+	public CharacterStatus Charstate {get {return this.charstate;}}
 
+	public CharacterState State { get { return state; } }
 
 	void Start ()
 	{
@@ -94,7 +95,6 @@ public class CharacterManager : MonoBehaviour
 					esPadaSwordMatarial = 0;
 					Destroy (EspadaTemp, 0.5f);
 				}
-
 			}
 		}
 
@@ -343,6 +343,26 @@ public class CharacterManager : MonoBehaviour
 			state = CharacterState.EsPadaSwordSummon;
 			animator.SetTrigger ("EsPadaSwordSummon");
 			break;
+		}
+	}
+
+	public void HitDamage(int _damage)
+	{
+		if(charAlive)
+		{
+			
+			if (charstate.HealthPoint > 0)
+			{
+				this.charstate.HealthPoint -= _damage;
+				//Hit Animation
+				Debug.Log("Hit Char"+ this.charstate.HealthPoint);
+			}
+			if (charstate.HealthPoint <= 0)
+			{
+				//Death Animation
+				charAlive= false;
+				Debug.Log ("death");
+			}
 		}
 	}
 
